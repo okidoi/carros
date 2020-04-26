@@ -1,8 +1,12 @@
 package com.carros.api;
 
+import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,9 +14,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.carros.domain.Carro;
 import com.carros.domain.CarrosService;
+import com.carros.domain.dto.CarroDTO;
 
 @RestController
 @RequestMapping("/api/v1/carros")
@@ -22,31 +28,87 @@ public class CarrosController {
 	private CarrosService  service;
 
 	@GetMapping()
-	public Iterable<Carro> get() {
-		return service.getCarros();
+	public ResponseEntity<List<CarroDTO>> get() {
+		
+		return ResponseEntity.ok(service.getCarros());
+		//return new ResponseEntity<>(service.getCarros(), HttpStatus.OK); //mesmo que a linha de cima, porém mais verboso
 	}
 	
 	
 	@GetMapping("/{id}")
-	public Optional<Carro> get(@PathVariable("id") Long id){
-		return service.getCarroById(id);
+	public ResponseEntity get(@PathVariable("id") Long id){
+		Optional<CarroDTO> carro = service.getCarroById(id);
+
+		/* CODIGO CORRETO. SOMENTE UMA OPÇÃO
+		if(carro.isPresent()) {
+			return ResponseEntity.ok(carro.get()); //o metodo get pega o carro que está dentro de Optional. Chama o build automaticamente
+		}else {
+			return ResponseEntity.notFound().build();  //Erro 404 - Not Found
+		}*/
+		
+		//outra opção (if ternário)		
+		
+		/*
+		return carro.isPresent() ?
+			ResponseEntity.ok(carro.get()) :
+			ResponseEntity.notFound().build();  //Erro 404 - Not Found
+		*/
+		
+		//Usando Lambda
+		return carro
+				.map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
+		
+		
 	}
 	
 	@GetMapping("/tipo/{tipo}")
-	public Iterable<Carro> getCarrosByTipo(@PathVariable("tipo") String tipo){
-		return service.getCarrosByTipo(tipo);
+	public ResponseEntity getCarrosByTipo(@PathVariable("tipo") String tipo){
+		
+		List<CarroDTO> carros = service.getCarrosByTipo(tipo);
+		
+		return carros.isEmpty()?
+				ResponseEntity.noContent().build() :
+				ResponseEntity.ok(carros);
+				
 	}
+	
+
 
 	@PostMapping
-	public String post(@RequestBody Carro carro) {
-		Carro c = service.insert(carro);
-		return "Carro salvo com sucesso: " + c.getId();
+	public ResponseEntity post(@RequestBody Carro carro) {
+
+		
+		try {
+			CarroDTO c = service.insert(carro);
+			
+			URI location = getUri(c.getId());
+			return ResponseEntity.created(location).build();
+			
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
+		 
 	}
+	
+    private URI getUri(Long id) {
+        return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(id).toUri();
+    }	
+	
 		
 	@PutMapping("/{id}")
 	public String put(@PathVariable("id") Long id, @RequestBody Carro carro) {
-		Carro c = service.update(carro, id);
-		return "Carro atualizado com sucesso: " + c.getId();
+		
+		//Carro c = service.update(carro, id);
+		
+		return "Carro atualizado com sucesso: " ;//+ c.getId();
+	}
+	
+	@DeleteMapping("/{id}")
+	public String delete(@PathVariable("id") Long id) {
+		service.delete(id);
+		return "Carro excluído com sucesso: ";
 	}
 		
 }
