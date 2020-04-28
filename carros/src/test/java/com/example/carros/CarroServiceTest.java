@@ -21,7 +21,7 @@ import com.carros.domain.dto.CarroDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CarrosApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CarrosApplicationTests {
+public class CarroServiceTest {
 
 	@Autowired
 	private CarroService service;
