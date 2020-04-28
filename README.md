@@ -4,3 +4,4 @@
 do tipo GET, POST, PUT, DELETE e utiliza novidades Lambda do Java 8. 
 
 - Para os métodos do tipo POST, PUT e DELETE a ferramenta POSTMAN foi utilizada para realizar as solicitações.
+- Testes utilizando o SpringBootTest e banco de dados H2.
