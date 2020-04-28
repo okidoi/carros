@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.carros.domain.Carro;
-import com.carros.domain.CarrosService;
+import com.carros.domain.CarroService;
 import com.carros.domain.dto.CarroDTO;
 
 @RestController
@@ -25,7 +25,7 @@ import com.carros.domain.dto.CarroDTO;
 public class CarrosController {
 	
 	@Autowired
-	private CarrosService  service;
+	private CarroService  service;
 
 	@GetMapping()
 	public ResponseEntity<List<CarroDTO>> get() {
@@ -74,23 +74,25 @@ public class CarrosController {
 	}
 	
 
- //teste
-	@PostMapping
+ 	@PostMapping
 	public ResponseEntity post(@RequestBody Carro carro) {
-
 		
 		try {
 			CarroDTO c = service.insert(carro);
 			
 			URI location = getUri(c.getId());
-			return ResponseEntity.created(location).build();
+			
+			//Caso sucesso retorna um Status 201 (Created)
+			return ResponseEntity.created(location).build();  
 			
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().build();  
 		}
 		 
 	}
 	
+ 	
+ 	//Monta a URL até o caminho /id
     private URI getUri(Long id) {
         return ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(id).toUri();
@@ -98,17 +100,26 @@ public class CarrosController {
 	
 		
 	@PutMapping("/{id}")
-	public String put(@PathVariable("id") Long id, @RequestBody Carro carro) {
+	public ResponseEntity put(@PathVariable("id") Long id, @RequestBody Carro carro) {
 		
-		//Carro c = service.update(carro, id);
+		carro.setId(id);
+		CarroDTO c = service.update(carro, id);
 		
-		return "Carro atualizado com sucesso: " ;//+ c.getId();
+		return c != null?
+				ResponseEntity.ok(c) :
+				ResponseEntity.notFound().build();
+		
+		
 	}
 	
 	@DeleteMapping("/{id}")
-	public String delete(@PathVariable("id") Long id) {
-		service.delete(id);
-		return "Carro excluído com sucesso: ";
+	public ResponseEntity delete(@PathVariable("id") Long id) {
+		boolean ok = service.delete(id);
+		
+		return ok?
+				ResponseEntity.ok().build() :
+				ResponseEntity.notFound().build();
+		
 	}
 		
 }

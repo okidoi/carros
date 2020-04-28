@@ -20,9 +20,11 @@ public class Carro {
     private String nome;
     private String tipo;
     private String descricao;
+    private String urlFoto; //Nome do campo no BD deve ser este também e não url_foto
+    private String urlVideo;//Nome do campo no BD deve ser este também e não url_video
     private String latitude;
     private String longitude;
-
+    
 
 
 

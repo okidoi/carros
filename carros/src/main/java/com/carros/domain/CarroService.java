@@ -13,7 +13,7 @@ import com.carros.domain.dto.CarroDTO;
 //Retornará a lista de Carros do BD.
 
 @Service
-public class CarrosService {
+public class CarroService {
 	
 	@Autowired
 	private CarrosRepository rep;
@@ -64,60 +64,46 @@ public class CarrosService {
 
 	public CarroDTO insert(Carro carro) {
 		
-		Assert.notNull(carro.getId(), "Não foi possível inserir o registro");
-		
-		return CarroDTO.create(rep.save(carro));
+		CarroDTO create = CarroDTO.create(rep.save(carro));
+		return create;
 		
 	}
 
 	
-	/*
-	public CarroDTO update(Carro carro, Long id) {
-		
-		Assert.notNull(id, "Não foi possível atualizar o registro");
-		
-		//Busca o carro no banco de dados
-//		
-//		  Optional< Carro> optional = getCarroById(id); //abaixo uma linha que seria a
-//		  outra opção if(optional.isPresent()) { Carro db = optional.get();
-//		  db.setNome(carro.getNome()); db.setTipo(carro.getTipo());
-//		  System.out.println("Carro id " + db.getId());
-//		  
-//		  //Atualiza o carro rep.save(db);
-//		  
-//		 	return db;
-//		  
-//		  }else {
-//		  
-//		  throw new RuntimeException("Não foi possível atualiza o registro"); }
-//		 
-		
-		return getCarroById(id).map(db->{
+	
+    public CarroDTO update(Carro carro, Long id) {
+        Assert.notNull(id,"Não foi possível atualizar o registro");
 
-			//copiar as propriedades
-			db.setNome(carro.getNome());
-			db.setTipo(carro.getTipo());
-			System.out.println("Carro id " + db.getId());
-			
-			//Atualiza o carro
-			rep.save(db);
-			return db;
-			
-			
-		}).orElseThrow(()->new RuntimeException("Não foi possível atualizar o registro"));
-		
-		
-		
-	}*/
+        // Busca o carro no banco de dados
+        Optional<Carro> optional = rep.findById(id);
+        if(optional.isPresent()) {
+            Carro db = optional.get();
+            // Copiar as propriedades
+            db.setNome(carro.getNome());
+            db.setTipo(carro.getTipo());
+            System.out.println("Carro id " + db.getId());
+
+            // Atualiza o carro
+            rep.save(db);
+
+            return CarroDTO.create(db);
+        } else {
+            return null;
+            //throw new RuntimeException("Não foi possível atualizar o registro");
+        }
+    }
 	
 	public Carro save(Carro carro) {
 		return rep.save(carro);
 	}
 
-	public void delete(Long id) {
+	public boolean delete(Long id) {
 		
 		if(getCarroById(id).isPresent()) {
 			rep.deleteById(id);
+			return true;
+		}else {
+			return false;
 		}
 		
 	}
