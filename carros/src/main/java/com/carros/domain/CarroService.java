@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.carros.domain.dto.CarroDTO;
+import com.carros.domain.exception.ObjectNotFoundException;
 
 //Retornará a lista de Carros do BD.
 
@@ -18,16 +19,9 @@ public class CarroService {
 	@Autowired
 	private CarrosRepository rep;
 	
-	
-	/*public List<Carro> getCarrosFake(){
-		List<Carro> carros = new ArrayList<>();
-		carros.add(new Carro(1L, "Fusca"));
-		carros.add(new Carro(2L, "Brasilia"));
-		carros.add(new Carro(3L, "Chevette"));
-		return carros;
-	}*/
-	
 	public List<CarroDTO> getCarros(){
+	
+		return rep.findAll().stream().map(CarroDTO::create).collect(Collectors.toList());
 		
 		//Manualmente (sem Lambda)
 		
@@ -43,13 +37,12 @@ public class CarroService {
 		//Estamos percorrendo carro por carro (em CarroDTO:new) e criando um CarroDTO
 		//Depois geramos uma nova lista de CarroDTO
 		
-		return rep.findAll().stream().map(CarroDTO::create).collect(Collectors.toList());
-
-		
 	}
 
-	public Optional<CarroDTO> getCarroById(Long id) {
-		return rep.findById(id).map(CarroDTO::create); //Usando Lambda
+	public CarroDTO getCarroById(Long id) {
+		
+		return rep.findById(id).map(CarroDTO::create).orElseThrow(()-> new ObjectNotFoundException("Carro não encontrado")); //Usando Lambda
+
 		//Opção sem Lambda
 		//Optional<Carro> carro = rep.findById(id);
 		//return carro.map(c -> Optional.of(new CarroDTO(c))).orElse(null);
@@ -58,21 +51,20 @@ public class CarroService {
 	
 
 	public List<CarroDTO> getCarrosByTipo(String tipo) {
+		
 		return rep.findByTipo(tipo).stream().map(CarroDTO::create).collect(Collectors.toList());
-
 	}
 
 	public CarroDTO insert(Carro carro) {
 		
+		Assert.isNull(carro.getId(), "Não foi possível inserir o registro");
 		CarroDTO create = CarroDTO.create(rep.save(carro));
-		return create;
-		
-	}
-
-	
+		return create;		
+	}	
 	
     public CarroDTO update(Carro carro, Long id) {
-        Assert.notNull(id,"Não foi possível atualizar o registro");
+     
+    	Assert.notNull(id,"Não foi possível atualizar o registro");
 
         // Busca o carro no banco de dados
         Optional<Carro> optional = rep.findById(id);
@@ -91,22 +83,19 @@ public class CarroService {
             return null;
             //throw new RuntimeException("Não foi possível atualizar o registro");
         }
+    
     }
 	
 	public Carro save(Carro carro) {
+		
 		return rep.save(carro);
+	
 	}
 
-	public boolean delete(Long id) {
+	public void delete(Long id) {
 		
-		if(getCarroById(id).isPresent()) {
-			rep.deleteById(id);
-			return true;
-		}else {
-			return false;
-		}
-		
+		rep.deleteById(id);
+	
 	}
-
 
 }

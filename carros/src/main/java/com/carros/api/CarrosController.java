@@ -20,6 +20,11 @@ import com.carros.domain.Carro;
 import com.carros.domain.CarroService;
 import com.carros.domain.dto.CarroDTO;
 
+
+//Evitar tratamento de exceção nesta classe. Quanto mais limpa for a classe melhor.
+//O tratamento de Exceção fica na ExceptionConfig e a exceção do tipo IllegalArgumentException será convertida em 
+//BadRequest
+
 @RestController
 @RequestMapping("/api/v1/carros")
 public class CarrosController {
@@ -37,28 +42,9 @@ public class CarrosController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity get(@PathVariable("id") Long id){
-		Optional<CarroDTO> carro = service.getCarroById(id);
 
-		/* CODIGO CORRETO. SOMENTE UMA OPÇÃO
-		if(carro.isPresent()) {
-			return ResponseEntity.ok(carro.get()); //o metodo get pega o carro que está dentro de Optional. Chama o build automaticamente
-		}else {
-			return ResponseEntity.notFound().build();  //Erro 404 - Not Found
-		}*/
-		
-		//outra opção (if ternário)		
-		
-		/*
-		return carro.isPresent() ?
-			ResponseEntity.ok(carro.get()) :
-			ResponseEntity.notFound().build();  //Erro 404 - Not Found
-		*/
-		
-		//Usando Lambda
-		return carro
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
-		
+		CarroDTO carro = service.getCarroById(id);
+		return ResponseEntity.ok(carro);
 		
 	}
 	
@@ -77,18 +63,9 @@ public class CarrosController {
  	@PostMapping
 	public ResponseEntity post(@RequestBody Carro carro) {
 		
-		try {
 			CarroDTO c = service.insert(carro);
-			
 			URI location = getUri(c.getId());
-			
-			//Caso sucesso retorna um Status 201 (Created)
-			return ResponseEntity.created(location).build();  
-			
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().build();  
-		}
-		 
+			return ResponseEntity.created(location).build();//Caso sucesso retorna um Status 201 (Created)  
 	}
 	
  	
@@ -114,11 +91,10 @@ public class CarrosController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity delete(@PathVariable("id") Long id) {
-		boolean ok = service.delete(id);
 		
-		return ok?
-				ResponseEntity.ok().build() :
-				ResponseEntity.notFound().build();
+		service.delete(id);		
+		return ResponseEntity.ok().build();
+				
 		
 	}
 		

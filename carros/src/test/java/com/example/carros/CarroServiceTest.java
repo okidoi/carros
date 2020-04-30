@@ -1,8 +1,10 @@
 package com.example.carros;
 
+import static org.assertj.core.api.Assertions.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -18,6 +20,7 @@ import com.carros.CarrosApplication;
 import com.carros.domain.Carro;
 import com.carros.domain.CarroService;
 import com.carros.domain.dto.CarroDTO;
+import com.carros.domain.exception.ObjectNotFoundException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = CarrosApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,10 +43,9 @@ public class CarroServiceTest {
 		assertNotNull(c);
 		
 		//Buscar o objeto
-		Optional<CarroDTO> op = service.getCarroById(id);
-		assertTrue(op.isPresent());
+		c = service.getCarroById(id);
+		assertNotNull(c);
 		
-		c = op.get();
 		assertEquals("Ferrari", c.getNome());
 		assertEquals("esportivo", c.getTipo());
 		
@@ -51,7 +53,13 @@ public class CarroServiceTest {
 		service.delete(id);
 		
 		//Verifcar se deletou
-		assertFalse(service.getCarroById(id).isPresent());
+		try {
+			assertNull(service.getCarroById(id));
+			fail("O carro não foi excluído");
+			
+		}catch(ObjectNotFoundException e) {
+			//Ok. Se cair aqui está certo. 
+		}
 		
 	}
 	
@@ -64,12 +72,10 @@ public class CarroServiceTest {
 	
 	
 	@Test
-	public void testaGetById() {
+	public void testaGet() {
 		
-		Optional<CarroDTO> op = service.getCarroById(11L);
-		assertTrue(op.isPresent());
-		
-		CarroDTO c = op.get();		
+		CarroDTO c = service.getCarroById(11L);
+		assertNotNull(c);
 		assertEquals("Ferrari FF", c.getNome());		
 		
 	}	
@@ -78,8 +84,6 @@ public class CarroServiceTest {
 	@Test
 	public void testaListaPorTipo() {
 		
-		
-		
 		assertEquals(10, service.getCarrosByTipo("classicos").size());	
 		assertEquals(10, service.getCarrosByTipo("esportivos").size());
 		assertEquals(10, service.getCarrosByTipo("luxo").size());
@@ -87,5 +91,7 @@ public class CarroServiceTest {
 		assertEquals(0, service.getCarrosByTipo("tipoQueNaoExiste").size());
 		
 	}		
+	
+	
 
 }
