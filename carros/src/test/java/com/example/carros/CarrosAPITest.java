@@ -36,11 +36,15 @@ public class CarrosAPITest {
 	private ResponseEntity<CarroDTO> getCarro(String url){
 		
 		//O retorno virá no tipo CarroDTO
-		return rest.getForEntity(url, CarroDTO.class);
+		return rest
+				.withBasicAuth("admin", "123")
+				.getForEntity(url, CarroDTO.class);
 	}
 	
 	private ResponseEntity<List<CarroDTO>> getCarros(String url){
-		return rest.exchange(url,
+		return rest
+				.withBasicAuth("admin", "123")
+				.exchange(url,
 							HttpMethod.GET,
 							null,
 							new ParameterizedTypeReference<List<CarroDTO>>() {
@@ -54,7 +58,10 @@ public class CarrosAPITest {
 		carro.setTipo("esportivos");
 		
 		//Insert
-		ResponseEntity response = rest.postForEntity("/api/v1/carros", carro, null);  // O objeto carro passado será convertido para Json pela API e faz o post
+		ResponseEntity response = 
+				rest
+				.withBasicAuth("admin", "123")
+				.postForEntity("/api/v1/carros", carro, null);  // O objeto carro passado será convertido para Json pela API e faz o post
 		System.out.println(response);
 		
 		//Verifica se criou
@@ -69,7 +76,9 @@ public class CarrosAPITest {
 		assertEquals("esportivos", c.getTipo());
 		
 		//Deletar o objeto
-		rest.delete(location);
+		rest
+		.withBasicAuth("admin", "123")
+		.delete(location);
 		assertEquals(HttpStatus.NOT_FOUND, getCarro(location).getStatusCode());
 		
 	}

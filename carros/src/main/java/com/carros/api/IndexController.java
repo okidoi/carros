@@ -1,5 +1,7 @@
 package com.carros.api;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,11 @@ public class IndexController {
 	public String get() {
 		return "Get Spring Boot";
 	}
+	
+    @GetMapping("/userInfo")
+    public UserDetails userInfo(@AuthenticationPrincipal UserDetails user) {
+        return user;
+    }	
 	
 	@GetMapping("/login")  
 	public String login(@RequestParam("login") String lLogin,
