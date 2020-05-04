@@ -134,7 +134,6 @@
 		</pluginRepository>
 	</pluginRepositories>
 
-
 	<build>
 		<plugins>
 			<plugin>
