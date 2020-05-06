@@ -38,6 +38,7 @@ public class UserDTO {
         return dto;
     }    
 
+
     public String toJson() throws JsonProcessingException {
         ObjectMapper m = new ObjectMapper();
         return m.writeValueAsString(this);
