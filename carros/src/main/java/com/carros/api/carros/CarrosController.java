@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -30,9 +32,11 @@ public class CarrosController {
 	private CarroService  service;
 
 	@GetMapping()
-	public ResponseEntity<List<CarroDTO>> get() {
+	public ResponseEntity<List<CarroDTO>> get(@RequestParam(value ="page", defaultValue = "0") Integer page, 
+ 											  @RequestParam(value ="size", defaultValue = "10") Integer size ) {
 		
-		return ResponseEntity.ok(service.getCarros());
+		return ResponseEntity.ok(service.getCarros(PageRequest.of(page, size))); //PageRequest cria um Pageable
+		
 		//return new ResponseEntity<>(service.getCarros(), HttpStatus.OK); //mesmo que a linha de cima, porém mais verboso
 	}
 	
@@ -46,9 +50,11 @@ public class CarrosController {
 	}
 	
 	@GetMapping("/tipo/{tipo}")
-	public ResponseEntity getCarrosByTipo(@PathVariable("tipo") String tipo){
+	public ResponseEntity getCarrosByTipo(@PathVariable("tipo") String tipo,
+										  @RequestParam(value ="page", defaultValue = "0") Integer page, 
+										  @RequestParam(value ="size", defaultValue = "10") Integer size ){
 		
-		List<CarroDTO> carros = service.getCarrosByTipo(tipo);
+		List<CarroDTO> carros = service.getCarrosByTipo(tipo,PageRequest.of(page, size));
 		
 		return carros.isEmpty()?
 				ResponseEntity.noContent().build() :
