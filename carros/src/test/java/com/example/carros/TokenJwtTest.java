@@ -1,7 +1,8 @@
 package com.example.carros;
 
 import com.carros.CarrosApplication;
-import com.carros.api.security.jwt.JwtUtil;
+import com.carros.api.infra.security.jwt.JwtUtil;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

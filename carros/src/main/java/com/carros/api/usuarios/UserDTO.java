@@ -1,12 +1,17 @@
-package com.carros.domain.dto;
+package com.carros.api.usuarios;
 
-import com.carros.domain.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL) //Somente campos que não estiverem nulos serão retornados.
 public class UserDTO {
     private String login;
     private String nome;
@@ -14,13 +19,24 @@ public class UserDTO {
 
     // token jwt
     private String token;
+    
+    private List<String> roles;
 
-    public static UserDTO create(User user, String token) {
+    public static UserDTO create(User user) {
         ModelMapper modelMapper = new ModelMapper();
         UserDTO dto = modelMapper.map(user, UserDTO.class);
-        dto.token = token;
+		dto.roles = user.getRoles().stream()
+				.map(Role::getNome)
+				.collect(Collectors.toList());
+        
         return dto;
     }
+    
+    public static UserDTO create(User user, String token) {
+        UserDTO dto = create(user);
+        dto.token = token;
+        return dto;
+    }    
 
     public String toJson() throws JsonProcessingException {
         ObjectMapper m = new ObjectMapper();

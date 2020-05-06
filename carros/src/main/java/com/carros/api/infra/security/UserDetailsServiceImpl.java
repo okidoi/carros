@@ -1,4 +1,4 @@
-package com.carros.api.security;
+package com.carros.api.infra.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,8 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import org.springframework.stereotype.Service;
 
-import com.carros.domain.User;
-import com.carros.domain.UserRepository;
+import com.carros.api.usuarios.User;
+import com.carros.api.usuarios.UserRepository;
 
 
 //Responsável por fazer a autenticação.

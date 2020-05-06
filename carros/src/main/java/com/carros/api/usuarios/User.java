@@ -1,4 +1,4 @@
-package com.carros.domain;
+package com.carros.api.usuarios;
 
 import java.util.Collection;
 import java.util.List;

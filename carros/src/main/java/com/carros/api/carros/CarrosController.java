@@ -1,4 +1,4 @@
-package com.carros.api;
+package com.carros.api.carros;
 
 import java.net.URI;
 import java.util.List;
@@ -16,10 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import com.carros.domain.Carro;
-import com.carros.domain.CarroService;
-import com.carros.domain.dto.CarroDTO;
 
 
 //Evitar tratamento de exceção nesta classe. Quanto mais limpa for a classe melhor.

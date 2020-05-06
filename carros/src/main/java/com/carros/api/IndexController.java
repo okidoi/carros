@@ -20,10 +20,7 @@ public class IndexController {
 		return "Get Spring Boot";
 	}
 	
-    @GetMapping("/userInfo")
-    public UserDetails userInfo(@AuthenticationPrincipal UserDetails user) {
-        return user;
-    }	
+
 	
 	@GetMapping("/login")  
 	public String login(@RequestParam("login") String lLogin,
