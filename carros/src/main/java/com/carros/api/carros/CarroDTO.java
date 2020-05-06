@@ -3,9 +3,12 @@ package com.carros.api.carros;
 
 import org.modelmapper.ModelMapper;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 
 @Data //Lombok
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CarroDTO {
 	
 	private Long id;

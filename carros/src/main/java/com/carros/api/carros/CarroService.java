@@ -98,4 +98,10 @@ public class CarroService {
 	
 	}
 
+	public List<CarroDTO> search(String query) {
+	
+		return rep.findByNomeContaining(query).stream().map(CarroDTO::create).collect(Collectors.toList());
+	
+	}
+
 }

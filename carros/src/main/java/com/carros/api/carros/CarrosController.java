@@ -62,6 +62,15 @@ public class CarrosController {
 				
 	}
 	
+	
+	@GetMapping("/search")
+	public ResponseEntity search(@RequestParam("query") String query) {
+	    List<CarroDTO> carros = service.search(query);
+	    return carros.isEmpty() ?
+	            ResponseEntity.noContent().build() :
+	            ResponseEntity.ok(carros);
+	}
+	
 
  	@PostMapping
  	@Secured({"ROLE_ADMIN"})  //Somente usuário com o perfil de Admin poderá inserir carro neste caso
